@@ -1,0 +1,3 @@
+/Users/arsanabdi/Desktop/virtualMachine2/cmake-build-debug/CMakeFiles/virtualMachine2.dir
+/Users/arsanabdi/Desktop/virtualMachine2/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/arsanabdi/Desktop/virtualMachine2/cmake-build-debug/CMakeFiles/rebuild_cache.dir
