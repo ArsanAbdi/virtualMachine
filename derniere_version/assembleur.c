@@ -221,7 +221,7 @@ void second_pass(FILE* input_file, FILE* output_file) {
                     unsigned int label_address = resolve_label(operands, "jmp");
                     machine_code = (opcode << 27) | (label_address & 0x07FFFFFF);
                 } else if (opcode >= 21 && opcode <= 26) { // Other jump instructions
-                    unsigned int label_address = resolve_label(operands, instruction);
+                    unsigned int label_address = resolve_label(operands, "jzs"); // Changez "instruction" par "jzs" si c'est spécifique à 'jzs'
                     machine_code = (opcode << 27) | (label_address & 0x07FFFFFF);
                 } else {
                     // Regular instruction, assemble it
@@ -247,26 +247,18 @@ void second_pass(FILE* input_file, FILE* output_file) {
 }
 
 unsigned int resolve_label(const char* label, const char* instruction) {
-    unsigned int address = 0;
-
     for (unsigned int i = 0; i < label_count; i++) {
         if (strcmp(labels[i].label, label) == 0) {
-            address = labels[i].address * 4; // On multiplie toujours par 4
-            break; // Sortir de la boucle dès que l'étiquette est trouvée
+            unsigned int address = labels[i].address * 4;
+            // Ajouter un décalage supplémentaire uniquement pour l'instruction 'jmp'.
+            if (strcmp(instruction, "jzs") == 0 || strcmp(instruction, "jmp") == 0) {
+                address += 0x10000;
+            }
+            return address;
         }
     }
-
-    if (address == 0 && strcmp(label, "ici") != 0) {
-        fprintf(stderr, "Label '%s' not found.\n", label);
-        exit(EXIT_FAILURE);
-    }
-
-    // Pour l'instruction 'jmp', ajouter un décalage supplémentaire de 0x10000
-    if (strcmp(instruction, "jmp") == 0 && strcmp(label, "ici") == 0) {
-        address += 0x10000;
-    }
-
-    return address;
+    fprintf(stderr, "Label '%s' not found.\n", label);
+    exit(EXIT_FAILURE);
 }
 
 int main(int argc, char* argv[]) {
